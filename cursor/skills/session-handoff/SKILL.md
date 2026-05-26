@@ -139,5 +139,5 @@ Omit: intermediate debugging, failed approaches unless the failure reason preven
 
 ## Additional Resources
 
-- Template: [templates/handoff-template.md](templates/handoff-template.md)
-- Example: [examples/example-handoff.md](examples/example-handoff.md)
+- Template: [templates/handoff-template.md](templates/handoff-template.md) — copy structure, fill from **current repo**
+- Example: [examples/example-handoff.md](examples/example-handoff.md) — **illustrative fiction only**; shows tone and density, not real paths. Never paste into a project handoff as-is.
