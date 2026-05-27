@@ -93,6 +93,13 @@ Before writing anything:
 2. Explore relevant code — routes, models, templates, tests, config
 3. Identify constraints: existing patterns, auth, DB schema, API contracts
 4. Decide scope: in-scope, out-of-scope, follow-up work
+5. **Platform parity (MDOTS):** grep sibling implementations (same UI stack / boot path). Record a table:
+
+| Pattern | Reference file | Apply to |
+|---------|----------------|----------|
+| e.g. stdout suppress | `bootstrap.py` | new `*-ui.py` |
+
+6. If orchestrated by [mdots-feature-delivery](../mdots-feature-delivery/SKILL.md), ensure Jira analysis includes **Runtime context** before planning.
 
 Output a one-paragraph summary of what you understood before proceeding.
 
@@ -120,6 +127,8 @@ Copy structure from [templates/plan-template.md](templates/plan-template.md). Re
 | Files affected | High-level list of paths |
 | Risks | Edge cases, migrations, breaking changes |
 | Test plan | How to verify—including **behavior-level** bullets that will drive unit/integration/E2E cases |
+| Platform parity | Sibling files/patterns to mirror (kiosk, boot, build) |
+| VM / boot smoke | Required for installer/ISO/kiosk: rebuild command + VirtualBox or manual steps |
 
 Keep the planning doc at the **design level** — no full code blocks here. Pseudocode and diagrams are fine. The **Test plan** rows should be concrete enough that someone can derive **exact test descriptions** later (given/when/then mentally).
 
@@ -212,6 +221,22 @@ Present to the user:
 
 Ask whether to proceed with implementation. Only edit source files after explicit approval. **When proceeding, run the RED → GREEN → REFACTOR workflow** described above; do **not** add production-only changes without failing tests guiding them.
 
+### Before first source edit (MDOTS delivery gate)
+
+- [ ] `git status` — no implementation that exists only as `__pycache__/*.pyc` without `.py` source
+- [ ] Read entrypoint + one sibling UI (see `.cursor/rules/mdots-kiosk-ui.mdc` in mdots-distro)
+- [ ] Follow [mdots-feature-delivery](../mdots-feature-delivery/SKILL.md) Gates C–E when user requested full delivery
+
+### Test plan must include (when ISO / kiosk applies)
+
+```markdown
+### VM / boot smoke
+- [ ] Rebuild: `<exact build command>`
+- [ ] `./build/test-with-virtualbox.sh [--ha] <size>`
+- [ ] GUI visible; no console scroll; primary flow works
+- [ ] Logs: `/var/log/start-installer-gui.log`, feature log path
+```
+
 ---
 
 ## Output Locations
@@ -233,9 +258,11 @@ If the user prefers a different location (e.g. `.cursor/plans/`, issue comment, 
 - **Reuse existing patterns** — read surrounding code before proposing new abstractions
 - **No secrets in docs** — never put API keys, tokens, or credentials in planning files
 - **Keep docs current** — if implementation diverges from the spec, update the doc or note the delta
+- **Source must land as `.py`** — do not end a delivery session with docs + pycache only; see [mdots-feature-delivery](../mdots-feature-delivery/SKILL.md)
 
 ## Additional Resources
 
 - Planning doc template: [templates/plan-template.md](templates/plan-template.md)
 - Implementation spec template: [templates/implementation-spec-template.md](templates/implementation-spec-template.md)
 - Expanded TDD workflows, checkpoints, and examples: [../tdd-workflow/SKILL.md](../tdd-workflow/SKILL.md)
+- MDOTS end-to-end delivery gates: [../mdots-feature-delivery/SKILL.md](../mdots-feature-delivery/SKILL.md)

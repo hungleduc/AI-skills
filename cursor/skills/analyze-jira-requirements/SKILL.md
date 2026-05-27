@@ -55,6 +55,16 @@ Copy and fill; omit sections when N/A:
 - Data / control flow (short):
 -
 
+## Runtime context (required for MDOTS / installer features)
+
+Fill when the ticket touches ISO, first boot, installer GUI, or appliance UI. If unclear, infer from codebase or ask once.
+
+- Boot surface: [ ] USB live  [ ] first disk boot  [ ] subsequent boot  [ ] N/A
+- UI type: [ ] PyQt kiosk  [ ] CLI  [ ] web  [ ] none
+- Build artifact: [ ] ISO  [ ] OVA  [ ] AMI  [ ] none — pattern: ___
+- Entrypoint script: ___ (e.g. `start-installer-gui.sh` → `ha-ui.py`)
+- Verify environment: [ ] VirtualBox  [ ] bare metal  [ ] CI only
+
 ## Functional requirements (numbered)
 1.
 
@@ -62,6 +72,9 @@ Copy and fill; omit sections when N/A:
 -
 
 ## Acceptance criteria (testable)
+
+Include **VM-observable** checks for kiosk/installer work (GUI visible, no console bleed, log paths), not only unit-testable helpers.
+
 - [ ]
 
 ## Dependencies & risks

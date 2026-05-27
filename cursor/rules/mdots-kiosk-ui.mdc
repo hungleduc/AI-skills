@@ -1,0 +1,66 @@
+---
+description: "MDOTS PyQt kiosk installer UI invariants — boot console, network, widget lifecycle"
+globs: apps/**/*ui*.py,apps/startup/*.py,apps/mdots/**/*.py
+alwaysApply: false
+---
+
+# MDOTS kiosk UI invariants
+
+Apply when adding or modifying **fullscreen PyQt installer / setup UIs** launched
+from `start-installer-gui.sh`, nodm, or startx on the target appliance.
+
+Reference implementations (read before coding):
+
+| Pattern | Reference |
+|---------|-----------|
+| stdout/stderr suppress | `apps/startup/bootstrap.py`, `apps/mdots/default-ip.py`, `apps/mdots/start-systemd.py` |
+| Installer layout / styling | `apps/startup/installer-gui.py` |
+| HA setup UI | `apps/mdots/ha/ha-ui.py` |
+| Boot routing | `apps/startup/start-installer-gui.sh` |
+
+## Console / TTY
+
+- Suppress stdout and stderr **immediately after** `import os, sys` and **before** PyQt imports:
+
+```python
+sys.stdout = open(os.devnull, "w")
+sys.stderr = open(os.devnull, "w")
+```
+
+- Do **not** use `print()` in production paths; write to `/var/log/<feature>.log` only.
+- Subprocess calls that may be noisy must use `capture_output=True` or redirect to log files.
+
+## Network (first boot)
+
+- Do **not** rely only on `ip route get 8.8.8.8` to find the interface — it fails when there is no default route yet (common on fresh VirtualBox boot: `enp0s3` down).
+- Fall back to first physical ethernet from `/sys/class/net/` (exclude `lo`, `docker`, `br-`, `veth`, `virbr`).
+- Static netplan must **match by MAC address**, not interface name (names change: `ens34` ↔ `enp0s3`).
+
+## Widget lifecycle
+
+- In `init_ui`, create **all** widgets (e.g. buttons) before calling any `refresh_*` that references them.
+- Guard optional early calls: `if not hasattr(self, "status_btn"): return`
+
+## Runtime paths
+
+- Repo: `apps/mdots/ha/ha-ui.py`
+- Target disk: `/scripts/ha/ha-ui.py` (copied by `build/build-disk-image.sh`)
+- Test imports from the package directory or use absolute runtime path in integration tests.
+
+## Required tests for new kiosk modules
+
+- Unit tests for pure helpers (network, labels, SSH command builders).
+- At least one **contract test** per kiosk entry script:
+  - stdout suppression appears before `from PyQt5`
+  - or structural test that critical init order is preserved
+
+## VM verification (not optional for new installer UI)
+
+After ISO rebuild, smoke on VirtualBox:
+
+```bash
+cd build/
+./test-with-virtualbox.sh --ha 30GB
+```
+
+Pass criteria: GUI visible, no boot console text bleeding through, primary tab/flow usable.
