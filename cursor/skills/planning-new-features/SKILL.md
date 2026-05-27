@@ -225,7 +225,7 @@ Ask whether to proceed with implementation. Only edit source files after explici
 
 - [ ] `git status` — no implementation that exists only as `__pycache__/*.pyc` without `.py` source
 - [ ] Read entrypoint + one sibling UI (see `.cursor/rules/mdots-kiosk-ui.mdc` in mdots-distro)
-- [ ] Follow [mdots-feature-delivery](../mdots-feature-delivery/SKILL.md) Gates C–E when user requested full delivery
+- [ ] Follow [mdots-feature-delivery](../mdots-feature-delivery/SKILL.md) Gates C–F when user requested full delivery
 
 ### Test plan must include (when ISO / kiosk applies)
 

@@ -56,6 +56,9 @@ sys.stderr = open(os.devnull, "w")
 
 ## VM verification (not optional for new installer UI)
 
+Before ISO rebuild, the agent runs **Gate F** checks from `mdots-feature-delivery` skill
+(grep for shims, `wc -l` on entrypoint, `py_compile`, `unittest`).
+
 After ISO rebuild, smoke on VirtualBox:
 
 ```bash
@@ -64,3 +67,9 @@ cd build/
 ```
 
 Pass criteria: GUI visible, no boot console text bleeding through, primary tab/flow usable.
+
+## Forbidden: bytecode shims
+
+Do **not** replace `.py` source with loaders that read `__pycache__/orig/*.pyc`.
+The build explicitly removes all `__pycache__` directories from the rootfs.
+Shims may pass local tests but **always fail on the ISO/appliance**.
